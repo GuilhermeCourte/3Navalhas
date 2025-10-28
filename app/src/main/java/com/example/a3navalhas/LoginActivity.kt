@@ -2,15 +2,19 @@ package com.example.a3navalhas
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 class LoginActivity : AppCompatActivity() {
 
@@ -26,48 +30,49 @@ class LoginActivity : AppCompatActivity() {
         val loginButton: Button = findViewById(R.id.loginButton)
 
         loginButton.setOnClickListener {
-            blockLogin()
+            performLogin()
         }
     }
 
-    private fun blockLogin() {
+    private fun performLogin() {
         val email = emailEditText.text.toString().trim()
         val password = passwordEditText.text.toString().trim()
 
-        val retrofit = Retrofit.Builder()
+        val logging = HttpLoggingInterceptor { message -> Log.d("OkHttp", message) }
+        logging.level = HttpLoggingInterceptor.Level.BODY
 
-            .baseUrl("http://10.0.2.2/")
+        val okHttpClient = OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://10.135.109.37/3navalhas_api/")
             .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
             .build()
         val apiService = retrofit.create(ApiService::class.java)
 
-
         val call = apiService.login(email, password)
 
-        call.enqueue(object : Callback<List<LoginResponse>> {
-            override fun onResponse(
-                call: Call<List<LoginResponse>>,
-                response: Response<List<LoginResponse>>
-            ) {
-                if (response.isSuccessful) {
-                    val loginResponses = response.body()
-                    if (!loginResponses.isNullOrEmpty()) {
-
-                        Toast.makeText(this@LoginActivity, "Login bem-sucedido!", Toast.LENGTH_SHORT).show()
-                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                    } else {
-                        Toast.makeText(this@LoginActivity, "Usuário ou senha inválidos", Toast.LENGTH_LONG).show()
-                    }
+        call.enqueue(object : Callback<LoginResponse> {
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                if (response.isSuccessful && response.body()?.status == "success") {
+                    Toast.makeText(this@LoginActivity, "Login bem-sucedido!", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
                 } else {
-
-                    Toast.makeText(this@LoginActivity, "Erro no login", Toast.LENGTH_LONG).show()
+                    val errorBody = response.errorBody()?.string() ?: response.body()?.message ?: "Usuário ou senha inválidos"
+                    Log.e("LoginError", "Código: ${response.code()}, Resposta: $errorBody")
+                    Toast.makeText(this@LoginActivity, "Falha no login: $errorBody", Toast.LENGTH_LONG).show()
                 }
             }
 
-            override fun onFailure(call: Call<List<LoginResponse>>, t: Throwable) {
-
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                Log.e("LoginFailure", "Erro de conexão", t)
                 Toast.makeText(this@LoginActivity, "Erro de conexão: ${t.message}", Toast.LENGTH_LONG).show()
             }
         })
