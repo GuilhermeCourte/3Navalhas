@@ -38,7 +38,7 @@
 
             // Configuração do Retrofit
             val retrofit = Retrofit.Builder()
-                .baseUrl("http://10.135.109.37/3navalhas_api/") // Substitua pelo seu endereço base
+                .baseUrl("http://10.135.138.34/3navalhas_api/") // Substitua pelo seu endereço base
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
             val apiService = retrofit.create(ApiService::class.java)
@@ -54,7 +54,8 @@
                     "0", // PRODUTO_DESCONTO (valor padrão, se não for usado na edição)
                     1, // CATEGORIA_ID (valor padrão)
                     1, // PRODUTO_ATIVO (valor padrão)
-                    imagemEditText.text.toString() // Valor da imagem
+                    imagemEditText.text.toString(), // Valor da imagem
+                    "0" // PRODUTO_DURACAO (valor padrão temporário)
                 )
 
                 apiService.editarProduto(

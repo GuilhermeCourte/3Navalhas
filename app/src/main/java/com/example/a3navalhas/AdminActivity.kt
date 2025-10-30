@@ -3,11 +3,10 @@ package com.example.a3navalhas
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -17,42 +16,20 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity() {
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: CustomAdapter
+class AdminActivity : AppCompatActivity() {
+
+    private lateinit var adminRecyclerView: RecyclerView
+    private lateinit var adminProductAdapter: AdminProductAdapter
+    private lateinit var adminAddProductButton: Button
     private lateinit var apiService: ApiService
-    private lateinit var bottomNavigationView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_produtos)
+        setContentView(R.layout.activity_admin)
 
-        recyclerView = findViewById(R.id.recyclerViewProdutos)
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        bottomNavigationView = findViewById(R.id.bottomNavigationView)
-        bottomNavigationView.setOnItemSelectedListener {
-            when (it.itemId) {
-                R.id.navigation_home -> {
-                    Toast.makeText(this, "Início clicado", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                R.id.navigation_services -> {
-                    Toast.makeText(this, "Serviços clicado", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                R.id.navigation_schedule -> {
-                    Toast.makeText(this, "Agendar clicado", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                R.id.navigation_user -> {
-                    val intent = Intent(this, LoginActivity::class.java)
-                    startActivity(intent)
-                    true
-                }
-                else -> false
-            }
-        }
+        adminRecyclerView = findViewById(R.id.adminRecyclerViewProdutos)
+        adminRecyclerView.layoutManager = LinearLayoutManager(this)
+        adminAddProductButton = findViewById(R.id.adminIncluirProdutoButton)
 
         val retrofit = Retrofit.Builder()
             .baseUrl("http://10.135.138.34/3navalhas_api/")
@@ -60,27 +37,32 @@ class MainActivity : AppCompatActivity() {
             .client(configureOkHttpClient())
             .build()
         apiService = retrofit.create(ApiService::class.java)
+
+        adminAddProductButton.setOnClickListener {
+            val intent = Intent(this, IncluirProdutoActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        fetchProducts()
+        fetchAdminProducts()
     }
 
-    private fun fetchProducts() {
+    private fun fetchAdminProducts() {
         apiService.getProdutos().enqueue(object : Callback<List<Produto>> {
             override fun onResponse(call: Call<List<Produto>>, response: Response<List<Produto>>) {
                 if (response.isSuccessful) {
                     val produtos = response.body() ?: emptyList()
-                    adapter = CustomAdapter(produtos.toMutableList())
-                    recyclerView.adapter = adapter
+                    adminProductAdapter = AdminProductAdapter(produtos.toMutableList(), apiService)
+                    adminRecyclerView.adapter = adminProductAdapter
                 } else {
-                    Log.e("API Error", "Falha ao carregar os produtos. Código: ${response.code()}")
+                    Log.e("API Admin Error", "Falha ao carregar os produtos do admin. Código: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<List<Produto>>, t: Throwable) {
-                Log.e("API Failure", "Erro ao carregar os produtos", t)
+                Log.e("API Admin Failure", "Erro ao carregar os produtos do admin", t)
             }
         })
     }

@@ -1,51 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="8dp">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
 
-    <ImageView
-        android:id="@+id/imagemProduto"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:scaleType="centerCrop" />
-
-    <LinearLayout
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:paddingStart="8dp">
+        android:padding="16dp">
 
+        <!-- Ícone do Serviço -->
+        <ImageView
+            android:id="@+id/serviceIcon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/circle_background"
+            android:padding="8dp"
+            android:src="@drawable/ic_barber_scissors"
+            android:contentDescription="Ícone do Serviço"
+            app:tint="@android:color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Nome do Serviço/Produto -->
         <TextView
             android:id="@+id/nomeProduto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            tools:text="CORTE SOCIAL"
+            app:layout_constraintEnd_toStartOf="@id/precoProdutoBadge"
+            app:layout_constraintStart_toEndOf="@id/serviceIcon"
+            app:layout_constraintTop_toTopOf="@id/serviceIcon" />
+
+        <!-- Preço do Produto (como um badge) -->
+        <TextView
+            android:id="@+id/precoProdutoBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold" />
+            android:background="@drawable/price_badge_background"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="R$ 40"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/serviceIcon" />
 
+        <!-- Descrição do Produto -->
         <TextView
             android:id="@+id/descricaoProduto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:textColor="#616161"
+            tools:text="Clássico e discreto, com as laterais levemente mais baixas e o topo alinhado. Ideal para ambientes formais ou para quem busca praticidade no dia a dia."
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/nomeProduto"
+            app:layout_constraintTop_toBottomOf="@id/nomeProduto" />
 
+        <!-- Duração do Serviço -->
         <TextView
-            android:id="@+id/precoProduto"
+            android:id="@+id/durationTextView"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
+            android:textColor="#757575"
+            android:textSize="12sp"
+            app:drawableStartCompat="@drawable/ic_clock"
+            tools:text="30 min"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/descricaoProduto" />
 
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/editarButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Editar" />
-
-    <Button
-        android:id="@+id/deletarButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Deletar" />
-
-</LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_home"
+        android:title="INÍCIO" />
+
+    <item
+        android:id="@+id/navigation_services"
+        android:icon="@drawable/ic_services"
+        android:title="SERVIÇOS" />
+
+    <item
+        android:id="@+id/navigation_schedule"
+        android:icon="@drawable/ic_schedule"
+        android:title="AGENDAR" />
+
+    <item
+        android:id="@+id/navigation_user"
+        android:icon="@drawable/ic_person"
+        android:title="USUÁRIO" />
+
+</menu>

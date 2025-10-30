@@ -4,9 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.textfield.TextInputEditText // Importar TextInputEditText
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -18,14 +18,14 @@ import java.util.concurrent.TimeUnit
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var emailEditText: EditText
-    private lateinit var passwordEditText: EditText
+    private lateinit var emailPhoneEditText: TextInputEditText // Mudado para emailPhoneEditText
+    private lateinit var passwordEditText: TextInputEditText // Mudado para TextInputEditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        emailEditText = findViewById(R.id.emailEditText)
+        emailPhoneEditText = findViewById(R.id.emailPhoneEditText) // Usar o novo ID
         passwordEditText = findViewById(R.id.passwordEditText)
         val loginButton: Button = findViewById(R.id.loginButton)
 
@@ -35,7 +35,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun performLogin() {
-        val email = emailEditText.text.toString().trim()
+        val email = emailPhoneEditText.text.toString().trim()
         val password = passwordEditText.text.toString().trim()
 
         val logging = HttpLoggingInterceptor { message -> Log.d("OkHttp", message) }
@@ -49,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
             .build()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.135.109.37/3navalhas_api/")
+            .baseUrl("http://10.135.138.34/3navalhas_api/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()
@@ -61,7 +61,7 @@ class LoginActivity : AppCompatActivity() {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.isSuccessful && response.body()?.status == "success") {
                     Toast.makeText(this@LoginActivity, "Login bem-sucedido!", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    val intent = Intent(this@LoginActivity, AdminActivity::class.java) // Redirecionar para AdminActivity
                     startActivity(intent)
                     finish()
                 } else {
