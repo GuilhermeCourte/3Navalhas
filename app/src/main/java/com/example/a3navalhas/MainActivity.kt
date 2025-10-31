@@ -31,18 +31,26 @@ class MainActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
+        // Garante que o item "Serviços" esteja selecionado ao entrar nesta Activity
+        bottomNavigationView.selectedItemId = R.id.navigation_services
+
         bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.navigation_home -> {
-                    Toast.makeText(this, "Início clicado", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, WelcomeActivity::class.java)
+                    // Adicionar flags para limpar o back stack e tratar WelcomeActivity como a nova raiz da navegação.
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                    finish() // Finaliza MainActivity para que WelcomeActivity seja a nova tela inicial do app
                     true
                 }
                 R.id.navigation_services -> {
-                    Toast.makeText(this, "Serviços clicado", Toast.LENGTH_SHORT).show()
-                    true
+                    Toast.makeText(this, "Você já está na tela de Serviços", Toast.LENGTH_SHORT).show()
+                    true // Já estamos na tela de serviços/produtos
                 }
                 R.id.navigation_schedule -> {
                     Toast.makeText(this, "Agendar clicado", Toast.LENGTH_SHORT).show()
+                    // Implementar navegação para a tela de agendamento
                     true
                 }
                 R.id.navigation_user -> {
@@ -55,7 +63,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.135.138.34/3navalhas_api/")
+            .baseUrl("http://192.168.15.9/3navalhas_api/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(configureOkHttpClient())
             .build()

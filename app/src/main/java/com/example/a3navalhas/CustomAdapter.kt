@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-// import com.squareup.picasso.Picasso // Picasso não é mais necessário para este adapter
+import com.squareup.picasso.Picasso // Picasso É necessário para este adapter
 
 class CustomAdapter(private val dataSet: MutableList<Produto>) :
     RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
@@ -27,12 +27,19 @@ class CustomAdapter(private val dataSet: MutableList<Produto>) :
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val produto = dataSet[position]
-        // viewHolder.serviceIcon.setImageResource(R.drawable.ic_barber_scissors) // Ícone estático, não precisa ser carregado dinamicamente por enquanto.
+
+        // Carrega a imagem do URL usando Picasso
+        if (!produto.PRODUTO_IMAGEM.isNullOrEmpty()) {
+            Picasso.get().load(produto.PRODUTO_IMAGEM).into(viewHolder.serviceIcon)
+        } else {
+            // Define uma imagem padrão se a URL estiver vazia ou nula
+            viewHolder.serviceIcon.setImageResource(R.drawable.ic_barber_scissors)
+        }
+
         viewHolder.nome.text = produto.PRODUTO_NOME
         viewHolder.descricao.text = produto.PRODUTO_DESC
         viewHolder.preco.text = "R$ ${produto.PRODUTO_PRECO}"
-        viewHolder.duration.text = "${produto.PRODUTO_DURACAO} min" // Assumindo PRODUTO_DURACAO existe
-        // Picasso não é mais usado para a imagem do produto, pois agora temos um ícone estático.
+        viewHolder.duration.text = "${produto.PRODUTO_DURACAO} min"
     }
 
     override fun getItemCount() = dataSet.size

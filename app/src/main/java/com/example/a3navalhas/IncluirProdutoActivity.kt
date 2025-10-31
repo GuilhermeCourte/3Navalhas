@@ -10,15 +10,13 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
-import retrofit2.http.Field
 
 class IncluirProdutoActivity : AppCompatActivity() {
     private lateinit var nomeEditText: EditText
     private lateinit var descricaoEditText: EditText
     private lateinit var precoEditText: EditText
     private lateinit var imagemEditText: EditText
+    private lateinit var duracaoEditText: EditText // Adicionado
     private lateinit var salvarButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,11 +27,12 @@ class IncluirProdutoActivity : AppCompatActivity() {
         descricaoEditText = findViewById(R.id.descricaoEditText)
         precoEditText = findViewById(R.id.precoEditText)
         imagemEditText = findViewById(R.id.imagemEditText)
+        duracaoEditText = findViewById(R.id.duracaoEditText) // Adicionado
         salvarButton = findViewById(R.id.salvarButton)
 
         // Configuração do Retrofit
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.135.138.34/3navalhas_api/") // Substitua pelo seu endereço base
+            .baseUrl("http://192.168.15.9/3navalhas_api/") // Substitua pelo seu endereço base
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val apiService = retrofit.create(ApiService::class.java)
@@ -44,7 +43,8 @@ class IncluirProdutoActivity : AppCompatActivity() {
                 nomeEditText.text.toString(),
                 descricaoEditText.text.toString(),
                 precoEditText.text.toString(),
-                imagemEditText.text.toString()
+                imagemEditText.text.toString(),
+                duracaoEditText.text.toString() // Adicionado
             ).enqueue(object : Callback<IncluirProdutoResponse> {
                 override fun onResponse(call: Call<IncluirProdutoResponse>, response: Response<IncluirProdutoResponse>) {
                     // A resposta é bem-sucedida se o status HTTP for 200 e a resposta não for nula.
