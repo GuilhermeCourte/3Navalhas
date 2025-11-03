@@ -4,14 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     tools:context=".AdminActivity">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/adminIncluirProdutoButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:text="Incluir Produto"
+        android:textColor="@android:color/white"
+        app:backgroundTint="#673AB7"
+        app:icon="@drawable/ic_add"
+        app:iconTint="@android:color/white"
+        app:iconGravity="textStart"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -1,56 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="8dp">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@android:color/white"
+    app:strokeColor="#CCCCCC"
+    app:strokeWidth="1dp">
 
-    <ImageView
-        android:id="@+id/imagemProduto"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:scaleType="centerCrop"
-        android:contentDescription="Imagem do Produto" />
-
-    <LinearLayout
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:paddingStart="8dp">
+        android:padding="16dp">
 
+        <!-- Imagem do Produto (agora um ShapeableImageView circular) -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imagemProduto"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="Imagem do Produto"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerFamily.Circle"
+            tools:src="@drawable/ic_barber_scissors" />
+
+        <!-- Nome do Produto -->
         <TextView
             android:id="@+id/nomeProduto"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:textStyle="bold"
-            tools:text="Nome do Produto" />
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            tools:text="Nome do Produto"
+            app:layout_constraintStart_toEndOf="@id/imagemProduto"
+            app:layout_constraintTop_toTopOf="@id/imagemProduto"
+            app:layout_constraintEnd_toStartOf="@id/editIcon" />
 
+        <!-- Descrição do Produto -->
         <TextView
             android:id="@+id/descricaoProduto"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="Descrição do Produto" />
+            android:layout_marginTop="4dp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:textColor="#616161"
+            tools:text="Descrição do Produto mais longa para teste, mostrando como o texto será cortado."
+            app:layout_constraintStart_toStartOf="@id/nomeProduto"
+            app:layout_constraintTop_toBottomOf="@id/nomeProduto"
+            app:layout_constraintEnd_toEndOf="@id/nomeProduto" />
 
+        <!-- Preço do Produto -->
         <TextView
             android:id="@+id/precoProduto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="R$ 99.99" />
+            android:layout_marginTop="4dp"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="#4CAF50"
+            tools:text="R$ 99.99"
+            app:layout_constraintStart_toStartOf="@id/nomeProduto"
+            app:layout_constraintTop_toBottomOf="@id/descricaoProduto" />
 
-    </LinearLayout>
+        <!-- Duração do Serviço -->
+        <TextView
+            android:id="@+id/durationTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
+            android:textColor="#757575"
+            android:textSize="12sp"
+            app:drawableStartCompat="@drawable/ic_clock"
+            tools:text="30 min"
+            app:layout_constraintStart_toStartOf="@id/nomeProduto"
+            app:layout_constraintTop_toBottomOf="@id/precoProduto"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-    <Button
-        android:id="@+id/editarButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Editar" />
+        <!-- Ícone de Editar -->
+        <ImageView
+            android:id="@+id/editIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintEnd_toStartOf="@id/deleteIcon"
+            app:layout_constraintTop_toTopOf="@id/imagemProduto"
+            app:layout_constraintBottom_toBottomOf="@id/imagemProduto"
+            app:tint="@android:color/darker_gray"
+            android:contentDescription="Editar Produto"
+            tools:src="@drawable/ic_edit" />
 
-    <Button
-        android:id="@+id/deletarButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Deletar" />
+        <!-- Ícone de Excluir -->
+        <ImageView
+            android:id="@+id/deleteIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/imagemProduto"
+            app:layout_constraintBottom_toBottomOf="@id/imagemProduto"
+            app:tint="@android:color/darker_gray"
+            android:contentDescription="Excluir Produto" />
 
-</LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

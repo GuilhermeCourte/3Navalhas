@@ -2,4 +2,10 @@
 <resources>
 
     <style name="Theme._3Navalhas" parent="Theme.MaterialComponents.DayNight.NoActionBar" />
+
+    <!-- Estilo para ShapeableImageView circular -->
+    <style name="ShapeAppearanceOverlay.App.CornerFamily.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.Toast // Import adicionado para Toasts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,8 +16,9 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import android.app.AlertDialog // Import adicionado para AlertDialog
 
-class AdminActivity : AppCompatActivity() {
+class AdminActivity : AppCompatActivity(), AdminProductAdapter.OnItemActionListener {
 
     private lateinit var adminRecyclerView: RecyclerView
     private lateinit var adminProductAdapter: AdminProductAdapter
@@ -54,17 +56,54 @@ class AdminActivity : AppCompatActivity() {
             override fun onResponse(call: Call<List<Produto>>, response: Response<List<Produto>>) {
                 if (response.isSuccessful) {
                     val produtos = response.body() ?: emptyList()
-                    adminProductAdapter = AdminProductAdapter(produtos.toMutableList(), apiService)
+                    // Passar 'this' como listener para o AdminProductAdapter
+                    adminProductAdapter = AdminProductAdapter(produtos.toMutableList(), this@AdminActivity)
                     adminRecyclerView.adapter = adminProductAdapter
                 } else {
                     Log.e("API Admin Error", "Falha ao carregar os produtos do admin. Código: ${response.code()}")
+                    Toast.makeText(this@AdminActivity, "Erro ao carregar os produtos do admin.", Toast.LENGTH_LONG).show()
                 }
             }
 
             override fun onFailure(call: Call<List<Produto>>, t: Throwable) {
                 Log.e("API Admin Failure", "Erro ao carregar os produtos do admin", t)
+                Toast.makeText(this@AdminActivity, "Erro de conexão ao carregar os produtos do admin.", Toast.LENGTH_LONG).show()
             }
         })
+    }
+
+    // Implementação da interface AdminProductAdapter.OnItemActionListener
+    override fun onEditClick(produto: Produto) {
+        val intent = Intent(this, EditarProdutoActivity::class.java).apply {
+            putExtra("PRODUTO_ID", produto.PRODUTO_ID)
+        }
+        startActivity(intent)
+    }
+
+    override fun onDeleteClick(produto: Produto, position: Int) {
+        AlertDialog.Builder(this)
+            .setTitle("Confirmar Exclusão")
+            .setMessage("Tem certeza que deseja excluir o produto '${produto.PRODUTO_NOME}'?")
+            .setPositiveButton("Sim") { dialog, which ->
+                apiService.deletarProduto(produto.PRODUTO_ID).enqueue(object : Callback<Void> {
+                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                        if (response.isSuccessful) {
+                            Toast.makeText(this@AdminActivity, "Produto excluído com sucesso!", Toast.LENGTH_SHORT).show()
+                            adminProductAdapter.removeItem(position) // Remover da lista localmente
+                        } else {
+                            Toast.makeText(this@AdminActivity, "Erro ao excluir produto.", Toast.LENGTH_LONG).show()
+                            Log.e("API Error", "Falha ao excluir produto. Código: ${response.code()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Void>, t: Throwable) {
+                        Toast.makeText(this@AdminActivity, "Erro de conexão ao excluir produto.", Toast.LENGTH_LONG).show()
+                        Log.e("API Failure", "Erro ao excluir produto", t)
+                    }
+                })
+            }
+            .setNegativeButton("Não", null)
+            .show()
     }
 
     private fun configureOkHttpClient(): OkHttpClient {

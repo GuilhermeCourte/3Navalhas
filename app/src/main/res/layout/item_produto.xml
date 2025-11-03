@@ -7,23 +7,26 @@
     android:layout_marginHorizontal="16dp"
     android:layout_marginVertical="8dp"
     app:cardCornerRadius="12dp"
-    app:cardElevation="4dp">
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@android:color/white"
+    app:strokeColor="#CCCCCC"
+    app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Ícone do Serviço -->
-        <ImageView
+        <!-- Ícone do Serviço (agora um ShapeableImageView circular) -->
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/serviceIcon"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/circle_background"
-            android:padding="8dp"
+            android:scaleType="centerCrop"
             android:contentDescription="Ícone do Serviço"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerFamily.Circle" />
 
         <!-- Nome do Serviço/Produto -->
         <TextView
@@ -82,8 +85,38 @@
             app:drawableStartCompat="@drawable/ic_clock"
             tools:text="30 min"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/descricaoProduto" />
+
+        <!-- Ícone de Editar -->
+        <ImageView
+            android:id="@+id/editIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/deleteIcon"
+            app:layout_constraintTop_toTopOf="@id/durationTextView"
+            app:tint="@android:color/darker_gray"
+            android:contentDescription="Editar Produto"
+            tools:src="@drawable/ic_edit" />
+
+        <!-- Ícone de Excluir -->
+        <ImageView
+            android:id="@+id/deleteIcon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/descricaoProduto" />
+            app:layout_constraintTop_toTopOf="@id/durationTextView"
+            app:tint="@android:color/darker_gray"
+            android:contentDescription="Excluir Produto"
+            tools:src="@drawable/ic_delete" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
