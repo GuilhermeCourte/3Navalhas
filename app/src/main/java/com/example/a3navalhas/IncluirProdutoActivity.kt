@@ -32,7 +32,7 @@ class IncluirProdutoActivity : AppCompatActivity() {
 
         // Configuração do Retrofit
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.15.9/3navalhas_api/") // Substitua pelo seu endereço base
+            .baseUrl("http://192.168.15.53/3navalhas_api/") // Substitua pelo seu endereço base
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val apiService = retrofit.create(ApiService::class.java)

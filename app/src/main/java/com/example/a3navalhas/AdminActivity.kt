@@ -34,7 +34,7 @@ class AdminActivity : AppCompatActivity(), AdminProductAdapter.OnItemActionListe
         adminAddProductButton = findViewById(R.id.adminIncluirProdutoButton)
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.15.9/3navalhas_api/")
+            .baseUrl("http://192.168.15.53/3navalhas_api/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(configureOkHttpClient())
             .build()

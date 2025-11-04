@@ -41,7 +41,7 @@
 
             // Configuração do Retrofit (agora dentro do onCreate para ser acessível)
             val retrofit = Retrofit.Builder()
-                .baseUrl("http://192.168.15.9/3navalhas_api/")
+                .baseUrl("http://192.168.15.53/3navalhas_api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(configureOkHttpClient()) // Usar o OkHttpClient configurado
                 .build()

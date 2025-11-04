@@ -26,8 +26,8 @@ class WelcomeActivity : AppCompatActivity() {
 
         // Configurar listener para o botão "AGENDAR AGORA"
         scheduleNowButton.setOnClickListener {
-            Toast.makeText(this, "Agendar Agora clicado", Toast.LENGTH_SHORT).show()
-            // Implementar navegação para a tela de agendamento
+            val intent = Intent(this, AgendamentoActivity::class.java)
+            startActivity(intent)
         }
 
         // Configurar listener para o botão "VER SERVIÇOS" (leva para MainActivity)

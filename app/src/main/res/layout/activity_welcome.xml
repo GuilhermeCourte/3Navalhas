@@ -23,18 +23,20 @@
             android:paddingHorizontal="24dp">
 
             <!-- Logo -->
-            <ImageView
-                android:id="@+id/logoImageView"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_marginTop="48dp"
-                android:src="@drawable/logo_tres_navalhas"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:contentDescription="Logo Três Navalhas" />
 
             <!-- Título "Tradição em Cada Corte" -->
+            <ImageView
+                android:id="@+id/logoImageView"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="48dp"
+                android:contentDescription="Logo Três Navalhas"
+                android:src="@drawable/logo_tres_navalhas"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.496"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <TextView
                 android:id="@+id/tradicaoTextView"
                 android:layout_width="wrap_content"

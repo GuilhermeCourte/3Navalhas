@@ -16,15 +16,12 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import android.app.AlertDialog // Import adicionado
-import com.google.android.material.floatingactionbutton.FloatingActionButton // Import adicionado
 
-class MainActivity : AppCompatActivity(), CustomAdapter.OnItemActionListener {
+class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CustomAdapter
     private lateinit var apiService: ApiService
     private lateinit var bottomNavigationView: BottomNavigationView
-    private lateinit var fabAddProduct: FloatingActionButton // Declarar FAB
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +48,8 @@ class MainActivity : AppCompatActivity(), CustomAdapter.OnItemActionListener {
                     true
                 }
                 R.id.navigation_schedule -> {
-                    Toast.makeText(this, "Agendar clicado", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, AgendamentoActivity::class.java)
+                    startActivity(intent)
                     true
                 }
                 R.id.navigation_user -> {
@@ -70,11 +68,8 @@ class MainActivity : AppCompatActivity(), CustomAdapter.OnItemActionListener {
             .build()
         apiService = retrofit.create(ApiService::class.java)
 
-        fabAddProduct = findViewById(R.id.fabAddProduct) // Encontrar o FAB
-        fabAddProduct.setOnClickListener { // Configurar listener para o FAB
-            val intent = Intent(this, IncluirProdutoActivity::class.java)
-            startActivity(intent)
-        }
+        // O FloatingActionButton foi removido do layout activity_produtos.xml,
+        // então o código relacionado a ele também foi removido daqui.
     }
 
     override fun onResume() {
@@ -87,8 +82,8 @@ class MainActivity : AppCompatActivity(), CustomAdapter.OnItemActionListener {
             override fun onResponse(call: Call<List<Produto>>, response: Response<List<Produto>>) {
                 if (response.isSuccessful) {
                     val produtos = response.body() ?: emptyList()
-                    // Passar 'this' como listener para o CustomAdapter
-                    adapter = CustomAdapter(produtos.toMutableList(), this@MainActivity) 
+                    // O CustomAdapter agora não espera um listener no construtor
+                    adapter = CustomAdapter(produtos.toMutableList())
                     recyclerView.adapter = adapter
                 } else {
                     Log.e("API Error", "Falha ao carregar os produtos. Código: ${response.code()}")
@@ -101,43 +96,6 @@ class MainActivity : AppCompatActivity(), CustomAdapter.OnItemActionListener {
                 Toast.makeText(this@MainActivity, "Erro de conexão ao carregar os produtos.", Toast.LENGTH_LONG).show()
             }
         })
-    }
-
-    // Implementação da interface CustomAdapter.OnItemActionListener
-    override fun onEditClick(produto: Produto) {
-        val intent = Intent(this, EditarProdutoActivity::class.java).apply {
-            putExtra("PRODUTO_ID", produto.PRODUTO_ID)
-            // Não precisamos mais passar os outros campos, EditarProdutoActivity os buscará
-        }
-        startActivity(intent)
-    }
-
-    override fun onDeleteClick(produto: Produto, position: Int) {
-        AlertDialog.Builder(this)
-            .setTitle("Confirmar Exclusão")
-            .setMessage("Tem certeza que deseja excluir o produto '${produto.PRODUTO_NOME}'?")
-            .setPositiveButton("Sim") { dialog, which ->
-                apiService.deletarProduto(produto.PRODUTO_ID).enqueue(object : Callback<Void> {
-                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                        if (response.isSuccessful) {
-                            Toast.makeText(this@MainActivity, "Produto excluído com sucesso!", Toast.LENGTH_SHORT).show()
-                            adapter.removeItem(position) // Remover da lista localmente
-                            // Ou, para ter certeza que a lista está 100% atualizada, recarregar:
-                            // fetchProducts()
-                        } else {
-                            Toast.makeText(this@MainActivity, "Erro ao excluir produto.", Toast.LENGTH_LONG).show()
-                            Log.e("API Error", "Falha ao excluir produto. Código: ${response.code()}")
-                        }
-                    }
-
-                    override fun onFailure(call: Call<Void>, t: Throwable) {
-                        Toast.makeText(this@MainActivity, "Erro de conexão ao excluir produto.", Toast.LENGTH_LONG).show()
-                        Log.e("API Failure", "Erro ao excluir produto", t)
-                    }
-                })
-            }
-            .setNegativeButton("Não", null)
-            .show()
     }
 
     private fun configureOkHttpClient(): OkHttpClient {

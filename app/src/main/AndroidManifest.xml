@@ -39,5 +39,26 @@
         <activity android:name=".AdminActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".AgendamentoActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SelectUnitActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SelectBarberActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SelectServiceActivity"
+            android:exported="false" />
+
+        <!-- Declaração da nova SelectDateTimeActivity -->
+        <activity
+            android:name=".SelectDateTimeActivity"
+            android:exported="false" />
+
     </application>
 </manifest>

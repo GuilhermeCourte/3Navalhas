@@ -17,76 +17,78 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Ícone do Serviço (agora um ShapeableImageView circular) -->
+        <!-- Ícone do Serviço (circular) -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/serviceIcon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:contentDescription="Ícone do Serviço"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:scaleType="centerCrop"
+            android:contentDescription="Ícone do Serviço"
+            android:src="@drawable/ic_scissors"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerFamily.Circle" />
 
-        <!-- Nome do Serviço/Produto -->
+        <!-- Nome do Serviço -->
         <TextView
-            android:id="@+id/nomeProduto"
+            android:id="@+id/serviceName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
             android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            tools:text="Corte Social"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/serviceIcon"
-            app:layout_constraintTop_toTopOf="@id/serviceIcon"
-            tools:text="CORTE SOCIAL" />
+            app:layout_constraintTop_toTopOf="@id/serviceIcon" />
 
-        <!-- Preço do Produto (como um badge) -->
+        <!-- Descrição do Serviço -->
         <TextView
-            android:id="@+id/precoProdutoBadge"
+            android:id="@+id/serviceDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:textColor="#616161"
+            android:textSize="14sp"
+            tools:text="Clássico e discreto, com as laterais levemente mais baixas e o topo alinhado."
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/serviceIcon"
+            app:layout_constraintTop_toBottomOf="@id/serviceName" />
+
+        <!-- Preço do Serviço (como um badge) -->
+        <TextView
+            android:id="@+id/servicePriceBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/price_badge_background"
             android:paddingHorizontal="10dp"
             android:paddingVertical="4dp"
-            android:text="R$ 40"
+            android:text="R$ 40.00"
             android:textColor="@android:color/white"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/nomeProduto" />
-
-        <!-- Descrição do Produto -->
-        <TextView
-            android:id="@+id/descricaoProduto"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:ellipsize="end"
-            android:maxLines="3"
-            android:textColor="#616161"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/nomeProduto"
-            app:layout_constraintTop_toBottomOf="@id/nomeProduto"
-            tools:text="Clássico e discreto, com as laterais levemente mais baixas e o topo alinhado. Ideal para ambientes formais ou para quem busca praticidade no dia a dia." />
+            app:layout_constraintTop_toTopOf="@id/serviceName" />
 
         <!-- Duração do Serviço -->
         <TextView
-            android:id="@+id/durationTextView"
+            android:id="@+id/serviceDuration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
             android:drawablePadding="4dp"
             android:gravity="center_vertical"
             android:textColor="#757575"
             android:textSize="12sp"
             app:drawableStartCompat="@drawable/ic_clock"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@id/descricaoProduto"
-            app:layout_constraintTop_toBottomOf="@id/descricaoProduto"
-            tools:text="30 min" />
+            tools:text="30 min"
+            app:layout_constraintStart_toEndOf="@id/serviceIcon"
+            app:layout_constraintTop_toBottomOf="@id/serviceDescription" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
