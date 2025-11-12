@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: CustomAdapter
+    private lateinit var serviceDisplayAdapter: ServiceDisplayAdapter // Renomeado de CustomAdapter
     private lateinit var apiService: ApiService
     private lateinit var bottomNavigationView: BottomNavigationView
 
@@ -62,11 +62,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.15.53/3navalhas_api/")
+            .baseUrl("http://10.171.29.115/3navalhas_api/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(configureOkHttpClient())
             .build()
         apiService = retrofit.create(ApiService::class.java)
+
+        serviceDisplayAdapter = ServiceDisplayAdapter(mutableListOf()) // Inicializa com lista vazia
+        recyclerView.adapter = serviceDisplayAdapter
 
         // O FloatingActionButton foi removido do layout activity_produtos.xml,
         // então o código relacionado a ele também foi removido daqui.
@@ -74,26 +77,29 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        fetchProducts()
+        fetchServices()
     }
 
-    private fun fetchProducts() {
-        apiService.getProdutos().enqueue(object : Callback<List<Produto>> {
-            override fun onResponse(call: Call<List<Produto>>, response: Response<List<Produto>>) {
+    private fun fetchServices() {
+        apiService.getServices().enqueue(object : Callback<List<Servico>> {
+            override fun onResponse(call: Call<List<Servico>>, response: Response<List<Servico>>) {
                 if (response.isSuccessful) {
-                    val produtos = response.body() ?: emptyList()
-                    // O CustomAdapter agora não espera um listener no construtor
-                    adapter = CustomAdapter(produtos.toMutableList())
-                    recyclerView.adapter = adapter
+                    val services = response.body() ?: emptyList()
+                    // ADICIONANDO LOG PARA DEPURACAO
+                    services.forEach { servico ->
+                        Log.d("MainActivity", "Service: ${servico.name}, ImageUrl: ${servico.imageUrl}")
+                    }
+                    // FIM DO LOG DE DEPURACAO
+                    serviceDisplayAdapter.updateDataSet(services) // Atualiza o adapter com os serviços da API
                 } else {
-                    Log.e("API Error", "Falha ao carregar os produtos. Código: ${response.code()}")
-                    Toast.makeText(this@MainActivity, "Erro ao carregar os produtos.", Toast.LENGTH_LONG).show()
+                    Log.e("API Error", "Falha ao carregar os serviços. Código: ${response.code()}")
+                    Toast.makeText(this@MainActivity, "Erro ao carregar os serviços.", Toast.LENGTH_LONG).show()
                 }
             }
 
-            override fun onFailure(call: Call<List<Produto>>, t: Throwable) {
-                Log.e("API Failure", "Erro ao carregar os produtos", t)
-                Toast.makeText(this@MainActivity, "Erro de conexão ao carregar os produtos.", Toast.LENGTH_LONG).show()
+            override fun onFailure(call: Call<List<Servico>>, t: Throwable) {
+                Log.e("API Failure", "Erro ao carregar os serviços", t)
+                Toast.makeText(this@MainActivity, "Erro de conexão ao carregar os serviços.", Toast.LENGTH_LONG).show()
             }
         })
     }

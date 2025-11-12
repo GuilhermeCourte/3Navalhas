@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@android:color/white"
+    app:strokeColor="#CCCCCC"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Ícone do Serviço (circular) -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/serviceIcon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="Ícone do Serviço"
+            android:src="@drawable/ic_scissors"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerFamily.Circle" />
+
+        <!-- Nome do Serviço -->
+        <TextView
+            android:id="@+id/serviceName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            tools:text="Corte Social"
+            app:layout_constraintEnd_toStartOf="@id/servicePriceBadge"
+            app:layout_constraintStart_toEndOf="@id/serviceIcon"
+            app:layout_constraintTop_toTopOf="@id/serviceIcon" />
+
+        <!-- Descrição do Serviço -->
+        <TextView
+            android:id="@+id/serviceDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:textColor="#616161"
+            android:textSize="14sp"
+            tools:text="Clássico e discreto, com as laterais levemente mais baixas e o topo alinhado."
+            app:layout_constraintEnd_toStartOf="@id/servicePriceBadge"
+            app:layout_constraintStart_toEndOf="@id/serviceIcon"
+            app:layout_constraintTop_toBottomOf="@id/serviceName" />
+
+        <!-- Preço do Serviço (como um badge) -->
+        <TextView
+            android:id="@+id/servicePriceBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/price_badge_background"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="R$ 40.00"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/serviceName" />
+
+        <!-- Duração do Serviço -->
+        <TextView
+            android:id="@+id/serviceDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
+            android:textColor="#757575"
+            android:textSize="12sp"
+            app:drawableStartCompat="@drawable/ic_clock"
+            tools:text="30 min"
+            app:layout_constraintStart_toEndOf="@id/serviceIcon"
+            app:layout_constraintTop_toBottomOf="@id/serviceDescription" />
+
+        <!-- Botões de Ação -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/serviceDuration">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonEditService"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Editar"
+                android:textColor="#1A237E"
+                app:icon="@drawable/ic_edit"
+                app:iconTint="#1A237E" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonDeleteService"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Excluir"
+                android:textColor="#B71C1C"
+                app:icon="@drawable/ic_delete"
+                app:iconTint="#B71C1C" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

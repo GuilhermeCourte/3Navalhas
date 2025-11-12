@@ -14,4 +14,9 @@
         <item name="android:textColor">@android:color/black</item>
     </style>
 
+    <!-- Estilo DEFINITIVO para a cor do rótulo (hint) -->
+    <style name="MyHintStyle" parent="TextAppearance.AppCompat.Caption">
+        <item name="android:textColor">#757575</item>
+    </style>
+
 </resources>

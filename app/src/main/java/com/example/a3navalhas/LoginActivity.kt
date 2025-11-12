@@ -49,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
             .build()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.15.53/3navalhas_api/")
+            .baseUrl("http://10.171.29.115/3navalhas_api/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()

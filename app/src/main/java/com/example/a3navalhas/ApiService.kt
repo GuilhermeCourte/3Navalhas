@@ -5,7 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
-import retrofit2.http.Query // Import adicionado
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -16,37 +16,100 @@ interface ApiService {
         @Field("password") password: String
     ): Call<LoginResponse>
 
-    @GET("produtos.php")
-    fun getProdutos(): Call<List<Produto>>
+    // --- Endpoints para Serviços ---
+    @GET("get_services.php")
+    fun getServices(): Call<List<Servico>>
+
+    @GET("get_service.php")
+    fun getServiceById(@Query("id") id: String): Call<Servico>
 
     @FormUrlEncoded
-    @POST("incluir_produto.php")
-    fun incluirProduto(
-        @Field("PRODUTO_NOME") nome: String,
-        @Field("PRODUTO_DESC") descricao: String,
-        @Field("PRODUTO_PRECO") preco: String,
-        @Field("PRODUTO_IMAGEM") imagem: String,
-        @Field("PRODUTO_DURACAO") duracao: String // Adicionado
-    ): Call<IncluirProdutoResponse>
+    @POST("add_service.php")
+    fun addService(
+        @Field("name") name: String,
+        @Field("description") description: String,
+        @Field("price") price: Double,
+        @Field("duration") duration: Int,
+        @Field("image_url") imageUrl: String? // Pode ser nulo
+    ): Call<GenericResponse>
 
     @FormUrlEncoded
-    @POST("editar_produto.php")
-    fun editarProduto(
-        @Field("PRODUTO_ID") id: Int,
-        @Field("PRODUTO_NOME") nome: String,
-        @Field("PRODUTO_DESC") descricao: String,
-        @Field("PRODUTO_PRECO") preco: String,
-        @Field("PRODUTO_IMAGEM") imagem: String,
-        @Field("PRODUTO_DURACAO") duracao: String // Adicionado
-    ): Call<Void>
+    @POST("update_service.php")
+    fun updateService(
+        @Field("id") id: String,
+        @Field("name") name: String,
+        @Field("description") description: String,
+        @Field("price") price: Double,
+        @Field("duration") duration: Int,
+        @Field("image_url") imageUrl: String?
+    ): Call<GenericResponse>
 
     @FormUrlEncoded
-    @POST("deletar_produto.php")
-    fun deletarProduto(
-        @Field("PRODUTO_ID") id: Int
-    ): Call<Void>
+    @POST("delete_service.php")
+    fun deleteService(@Field("id") id: String): Call<GenericResponse>
 
-    // NOVO: Função para obter um único produto por ID
-    @GET("get_produto.php") // Este será o novo arquivo PHP
-    fun getProdutoById(@Query("PRODUTO_ID") id: Int): Call<Produto>
+
+    // --- Endpoints para Unidades ---
+    @GET("get_units.php")
+    fun getUnits(): Call<List<Unidade>>
+
+    @GET("get_unit.php")
+    fun getUnitById(@Query("id") id: String): Call<Unidade>
+
+    @FormUrlEncoded
+    @POST("add_unit.php")
+    fun addUnit(
+        @Field("name") name: String,
+        @Field("city_state") cityState: String,
+        @Field("address_cep") addressCep: String,
+        @Field("image_url") imageUrl: String?
+    ): Call<GenericResponse>
+
+    @FormUrlEncoded
+    @POST("update_unit.php")
+    fun updateUnit(
+        @Field("id") id: String,
+        @Field("name") name: String,
+        @Field("city_state") cityState: String,
+        @Field("address_cep") addressCep: String,
+        @Field("image_url") imageUrl: String?
+    ): Call<GenericResponse>
+
+    @FormUrlEncoded
+    @POST("delete_unit.php")
+    fun deleteUnit(@Field("id") id: String): Call<GenericResponse>
+
+
+    // --- Endpoints para Barbeiros ---
+    @GET("get_barbers.php")
+    fun getBarbers(): Call<List<Barbeiro>>
+
+    @GET("get_barber.php")
+    fun getBarberById(@Query("id") id: String): Call<Barbeiro>
+
+    @FormUrlEncoded
+    @POST("add_barber.php")
+    fun addBarber(
+        @Field("name") name: String,
+        @Field("specialization") specialization: String,
+        @Field("image_url") imageUrl: String?,
+        @Field("unit_id") unitId: String
+    ): Call<GenericResponse>
+
+    @FormUrlEncoded
+    @POST("update_barber.php")
+    fun updateBarber(
+        @Field("id") id: String,
+        @Field("name") name: String,
+        @Field("specialization") specialization: String,
+        @Field("image_url") imageUrl: String?,
+        @Field("unit_id") unitId: String
+    ): Call<GenericResponse>
+
+    @FormUrlEncoded
+    @POST("delete_barber.php")
+    fun deleteBarber(@Field("id") id: String): Call<GenericResponse>
+
+    // --- Data Classes de Resposta --- (assumindo que Servico, Unidade, Barbeiro e LoginResponse já estão definidas e acessíveis)
+    data class GenericResponse(val status: String, val message: String)
 }

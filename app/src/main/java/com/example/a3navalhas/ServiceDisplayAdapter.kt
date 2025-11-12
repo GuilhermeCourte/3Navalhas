@@ -9,14 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.imageview.ShapeableImageView
 import com.squareup.picasso.Picasso
 
-
-class ServiceAdapter(
-    private val dataSet: MutableList<Servico>, // Alterado para MutableList
-    private val onItemClick: (Servico) -> Unit
-) : RecyclerView.Adapter<ServiceAdapter.ViewHolder>() {
+class ServiceDisplayAdapter(
+    private val dataSet: MutableList<Servico>
+) : RecyclerView.Adapter<ServiceDisplayAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val serviceIcon: ShapeableImageView = view.findViewById(R.id.serviceIcon)
+        val serviceIcon: ShapeableImageView = view.findViewById(R.id.serviceIcon) // Usando ShapeableImageView
         val serviceName: TextView = view.findViewById(R.id.serviceName)
         val serviceDescription: TextView = view.findViewById(R.id.serviceDescription)
         val servicePriceBadge: TextView = view.findViewById(R.id.servicePriceBadge)
@@ -25,7 +23,7 @@ class ServiceAdapter(
 
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.item_servico, viewGroup, false)
+            .inflate(R.layout.item_servico, viewGroup, false) // Inflar item_servico.xml
         return ViewHolder(view)
     }
 
@@ -42,13 +40,11 @@ class ServiceAdapter(
         viewHolder.serviceDescription.text = servico.description
         viewHolder.servicePriceBadge.text = "R$ ${String.format("%.2f", servico.price)}"
         viewHolder.serviceDuration.text = "${servico.duration} min"
-
-        viewHolder.itemView.setOnClickListener { onItemClick(servico) }
     }
 
     override fun getItemCount() = dataSet.size
 
-    // Novo método para atualizar o conjunto de dados
+    // Método para atualizar o conjunto de dados
     fun updateDataSet(newDataSet: List<Servico>) {
         dataSet.clear()
         dataSet.addAll(newDataSet)

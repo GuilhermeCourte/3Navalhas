@@ -2,48 +2,43 @@ package com.example.a3navalhas
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 class SelectUnitActivity : AppCompatActivity() {
 
     private lateinit var recyclerViewUnits: RecyclerView
     private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var apiService: ApiService
+    private lateinit var unitAdapter: UnitAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_unit)
 
         recyclerViewUnits = findViewById(R.id.recyclerViewUnits)
+        bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
-        // Dados de exemplo para as unidades
-        val sampleUnits = listOf(
-            Unidade(
-                id = "1",
-                name = "TRÊS NAVALHAS I - CAPÃO REDONDO",
-                cityState = "São Paulo / SP",
-                addressCep = "Avenida Carlos Caldeira Filho, 1808 - 05464-187",
-                imageUrl = null // Usará o logo padrão
-            ),
-            Unidade(
-                id = "2",
-                name = "TRÊS NAVALHAS II - PARQUE REGINA",
-                cityState = "São Paulo / SP",
-                addressCep = "Rua Francisco Soares, 106 - 05774-300",
-                imageUrl = null // Usará o logo padrão
-            ),
-            Unidade(
-                id = "3",
-                name = "TRÊS NAVALHAS III - VILA ANDRADE",
-                cityState = "São Paulo / SP",
-                addressCep = "Rua Wilson, 685 - 05665-030",
-                imageUrl = null // Usará o logo padrão
-            )
-        )
+        // 1. Configurar Retrofit e ApiService
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://10.171.29.115/3navalhas_api/") // Usar o mesmo IP local do XAMPP
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(configureOkHttpClient())
+            .build()
+        apiService = retrofit.create(ApiService::class.java)
 
-        val unitAdapter = UnitAdapter(sampleUnits) { selectedUnit ->
+        unitAdapter = UnitAdapter(mutableListOf()) { selectedUnit ->
             // Quando uma unidade é clicada, retorna o ID para a AgendamentoActivity
             val resultIntent = Intent().apply {
                 putExtra("SELECTED_UNIT_ID", selectedUnit.id)
@@ -54,8 +49,7 @@ class SelectUnitActivity : AppCompatActivity() {
         }
         recyclerViewUnits.adapter = unitAdapter
 
-        bottomNavigationView = findViewById(R.id.bottomNavigationView)
-        // Garante que o item "Agendar" esteja selecionado ao entrar nesta Activity
+        // Configurar Bottom Navigation View
         bottomNavigationView.selectedItemId = R.id.navigation_schedule
 
         bottomNavigationView.setOnItemSelectedListener {
@@ -86,5 +80,40 @@ class SelectUnitActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchUnits()
+    }
+
+    private fun fetchUnits() {
+        apiService.getUnits().enqueue(object : Callback<List<Unidade>> {
+            override fun onResponse(call: Call<List<Unidade>>, response: Response<List<Unidade>>) {
+                if (response.isSuccessful) {
+                    val units = response.body() ?: emptyList()
+                    unitAdapter.updateDataSet(units) // Novo método para atualizar o Adapter
+                } else {
+                    Log.e("API Error", "Falha ao carregar as unidades. Código: ${response.code()}")
+                    Toast.makeText(this@SelectUnitActivity, "Erro ao carregar as unidades.", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<Unidade>>, t: Throwable) {
+                Log.e("API Failure", "Erro ao carregar as unidades", t)
+                Toast.makeText(this@SelectUnitActivity, "Erro de conexão ao carregar as unidades.", Toast.LENGTH_LONG).show()
+            }
+        })
+    }
+
+    private fun configureOkHttpClient(): OkHttpClient {
+        val logging = HttpLoggingInterceptor { message -> Log.d("OkHttp", message) }
+        logging.level = HttpLoggingInterceptor.Level.BODY
+        return OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
     }
 }

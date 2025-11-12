@@ -30,11 +30,9 @@
             android:exported="false"> <!-- Acessível apenas via Intent -->
         </activity>
 
-        <activity android:name=".IncluirProdutoActivity"
-            android:exported="false" />
-
-        <activity android:name=".EditarProdutoActivity"
-            android:exported="false" />
+        <!-- Antigas Activities de Produto (agora gerenciadas por Serviço) - Removidas -->
+        <!-- <activity android:name=".IncluirProdutoActivity" android:exported="false" /> -->
+        <!-- <activity android:name=".EditarProdutoActivity" android:exported="false" /> -->
 
         <activity android:name=".AdminActivity"
             android:exported="false" />
@@ -55,9 +53,41 @@
             android:name=".SelectServiceActivity"
             android:exported="false" />
 
-        <!-- Declaração da nova SelectDateTimeActivity -->
         <activity
             android:name=".SelectDateTimeActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ManageServicesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ManageUnitsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ManageBarbersActivity"
+            android:exported="false" />
+
+        <!-- Novas Activities para gerenciamento de Serviços -->
+        <activity
+            android:name=".AddServiceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditServiceActivity"
+            android:exported="false" />
+
+        <!-- Nova Activity para adicionar Unidade -->
+        <activity
+            android:name=".AddUnitActivity"
+            android:exported="false" />
+
+        <!-- Activities para Barbeiro -->
+        <activity
+            android:name=".AddBarberActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditBarberActivity"
             android:exported="false" />
 
     </application>

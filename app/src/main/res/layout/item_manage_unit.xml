@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@android:color/white"
+    app:strokeColor="#CCCCCC"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Logo da Unidade (circular) -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/unitLogo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="Logo da Unidade"
+            android:src="@drawable/logo_tres_navalhas"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerFamily.Circle" />
+
+        <!-- Nome da Unidade -->
+        <TextView
+            android:id="@+id/unitName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            tools:text="TRÊS NAVALHAS I - CAPÃO REDONDO"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/unitLogo"
+            app:layout_constraintTop_toTopOf="@id/unitLogo" />
+
+        <!-- Cidade/Estado -->
+        <TextView
+            android:id="@+id/unitCityState"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:textColor="#616161"
+            android:textSize="14sp"
+            tools:text="São Paulo / SP"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/unitLogo"
+            app:layout_constraintTop_toBottomOf="@id/unitName" />
+
+        <!-- Endereço e CEP -->
+        <TextView
+            android:id="@+id/unitAddressCep"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:textColor="#616161"
+            android:textSize="14sp"
+            tools:text="Avenida Carlos Caldeira Filho, 1808 - 05464-187"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/unitLogo"
+            app:layout_constraintTop_toBottomOf="@id/unitCityState" />
+
+        <!-- Botões de Ação -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/unitAddressCep">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonEditUnit"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Editar"
+                android:textColor="#1A237E"
+                app:icon="@drawable/ic_edit"
+                app:iconTint="#1A237E" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonDeleteUnit"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Excluir"
+                android:textColor="#B71C1C"
+                app:icon="@drawable/ic_delete"
+                app:iconTint="#B71C1C" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

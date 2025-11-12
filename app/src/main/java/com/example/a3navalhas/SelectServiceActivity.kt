@@ -2,15 +2,26 @@ package com.example.a3navalhas
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 class SelectServiceActivity : AppCompatActivity() {
 
     private lateinit var recyclerViewServices: RecyclerView
     private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var apiService: ApiService
+    private lateinit var serviceAdapter: ServiceAdapter
 
     // Constante para identificar a requisição de seleção de serviço
     companion object {
@@ -22,36 +33,17 @@ class SelectServiceActivity : AppCompatActivity() {
         setContentView(R.layout.activity_select_service)
 
         recyclerViewServices = findViewById(R.id.recyclerViewServices)
+        bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
-        // Dados de exemplo para os serviços
-        val sampleServices = listOf(
-            Servico(
-                id = "service1",
-                name = "Corte Social",
-                description = "Clássico e discreto, com as laterais levemente mais baixas e o topo alinhado.",
-                price = 40.00,
-                duration = 30,
-                imageUrl = null // Usará o ícone padrão
-            ),
-            Servico(
-                id = "service2",
-                name = "Barba Modelada",
-                description = "Modelagem de barba com navalha e produtos premium.",
-                price = 35.00,
-                duration = 20,
-                imageUrl = null // Usará o ícone padrão
-            ),
-            Servico(
-                id = "service3",
-                name = "Corte + Barba",
-                description = "Combo completo de corte de cabelo e barba modelada.",
-                price = 70.00,
-                duration = 50,
-                imageUrl = null // Usará o ícone padrão
-            )
-        )
+        // 1. Configurar Retrofit e ApiService
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://10.171.29.115/3navalhas_api/") // Usar o mesmo IP local do XAMPP
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(configureOkHttpClient())
+            .build()
+        apiService = retrofit.create(ApiService::class.java)
 
-        val serviceAdapter = ServiceAdapter(sampleServices) { selectedService ->
+        serviceAdapter = ServiceAdapter(mutableListOf()) { selectedService ->
             // Quando um serviço é clicado, retorna o ID e nome para a AgendamentoActivity
             val resultIntent = Intent().apply {
                 putExtra("SELECTED_SERVICE_ID", selectedService.id)
@@ -62,8 +54,7 @@ class SelectServiceActivity : AppCompatActivity() {
         }
         recyclerViewServices.adapter = serviceAdapter
 
-        bottomNavigationView = findViewById(R.id.bottomNavigationView)
-        // Garante que o item "Agendar" esteja selecionado ao entrar nesta Activity
+        // Configurar Bottom Navigation View
         bottomNavigationView.selectedItemId = R.id.navigation_schedule
 
         bottomNavigationView.setOnItemSelectedListener {
@@ -94,5 +85,40 @@ class SelectServiceActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchServices()
+    }
+
+    private fun fetchServices() {
+        apiService.getServices().enqueue(object : Callback<List<Servico>> {
+            override fun onResponse(call: Call<List<Servico>>, response: Response<List<Servico>>) {
+                if (response.isSuccessful) {
+                    val services = response.body() ?: emptyList()
+                    serviceAdapter.updateDataSet(services)
+                } else {
+                    Log.e("API Error", "Falha ao carregar os serviços. Código: ${response.code()}")
+                    Toast.makeText(this@SelectServiceActivity, "Erro ao carregar os serviços.", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<Servico>>, t: Throwable) {
+                Log.e("API Failure", "Erro ao carregar os serviços", t)
+                Toast.makeText(this@SelectServiceActivity, "Erro de conexão ao carregar os serviços.", Toast.LENGTH_LONG).show()
+            }
+        })
+    }
+
+    private fun configureOkHttpClient(): OkHttpClient {
+        val logging = HttpLoggingInterceptor { message -> Log.d("OkHttp", message) }
+        logging.level = HttpLoggingInterceptor.Level.BODY
+        return OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
     }
 }

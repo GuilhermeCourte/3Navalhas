@@ -2,15 +2,26 @@ package com.example.a3navalhas
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 class SelectBarberActivity : AppCompatActivity() {
 
     private lateinit var recyclerViewBarbers: RecyclerView
     private lateinit var bottomNavigationView: BottomNavigationView
+    private lateinit var apiService: ApiService
+    private lateinit var barberAdapter: BarberAdapter
 
     // Constante para identificar a requisição de seleção de barbeiro
     companion object {
@@ -18,62 +29,27 @@ class SelectBarberActivity : AppCompatActivity() {
         const val EXTRA_UNIT_ID = "EXTRA_UNIT_ID"
     }
 
+    private var selectedUnitId: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_select_barber)
 
         recyclerViewBarbers = findViewById(R.id.recyclerViewBarbers)
+        bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
         // 1. Receber o unitId da Intent
-        val selectedUnitId = intent.getStringExtra(EXTRA_UNIT_ID)
+        selectedUnitId = intent.getStringExtra(EXTRA_UNIT_ID)
 
-        // Dados de exemplo para os barbeiros, agora com unitId
-        val allBarbers = listOf(
-            Barbeiro(
-                id = "barber1",
-                name = "João da Navalha",
-                specialization = "Cortes clássicos, barba modelada",
-                imageUrl = null,
-                unitId = "1" // Associado à Unidade 1
-            ),
-            Barbeiro(
-                id = "barber2",
-                name = "Pedro Tesoura",
-                specialization = "Modernos e degradê, coloração",
-                imageUrl = null,
-                unitId = "1" // Associado à Unidade 1
-            ),
-            Barbeiro(
-                id = "barber3",
-                name = "Maria Estilo",
-                specialization = "Cortes femininos e infantis, tratamentos capilares",
-                imageUrl = null,
-                unitId = "2" // Associado à Unidade 2
-            ),
-            Barbeiro(
-                id = "barber4",
-                name = "Carlos Cabelo",
-                specialization = "Especialista em kids, corte e diversão",
-                imageUrl = null,
-                unitId = "2" // Associado à Unidade 2
-            ),
-            Barbeiro(
-                id = "barber5",
-                name = "Ana Hair",
-                specialization = "Colorimetria e tratamentos avançados",
-                imageUrl = null,
-                unitId = "3" // Associado à Unidade 3
-            )
-        )
+        // 2. Configurar Retrofit e ApiService
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://10.171.29.115/3navalhas_api/") // Usar o mesmo IP local do XAMPP
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(configureOkHttpClient())
+            .build()
+        apiService = retrofit.create(ApiService::class.java)
 
-        // 2. Filtrar barbeiros com base no unitId recebido
-        val filteredBarbers = if (selectedUnitId != null) {
-            allBarbers.filter { it.unitId == selectedUnitId }
-        } else {
-            allBarbers // Se nenhum unitId for fornecido, mostra todos (comportamento padrão)
-        }
-
-        val barberAdapter = BarberAdapter(filteredBarbers) { selectedBarber ->
+        barberAdapter = BarberAdapter(mutableListOf()) { selectedBarber ->
             // Quando um barbeiro é clicado, retorna o ID e nome para a AgendamentoActivity
             val resultIntent = Intent().apply {
                 putExtra("SELECTED_BARBER_ID", selectedBarber.id)
@@ -84,8 +60,7 @@ class SelectBarberActivity : AppCompatActivity() {
         }
         recyclerViewBarbers.adapter = barberAdapter
 
-        bottomNavigationView = findViewById(R.id.bottomNavigationView)
-        // Garante que o item "Agendar" esteja selecionado ao entrar nesta Activity
+        // Configurar Bottom Navigation View
         bottomNavigationView.selectedItemId = R.id.navigation_schedule
 
         bottomNavigationView.setOnItemSelectedListener {
@@ -116,5 +91,46 @@ class SelectBarberActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchBarbers()
+    }
+
+    private fun fetchBarbers() {
+        apiService.getBarbers().enqueue(object : Callback<List<Barbeiro>> {
+            override fun onResponse(call: Call<List<Barbeiro>>, response: Response<List<Barbeiro>>) {
+                if (response.isSuccessful) {
+                    val allBarbers = response.body() ?: emptyList()
+                    // Aplicar a lógica de filtragem após obter todos os barbeiros da API
+                    val filteredBarbers = if (selectedUnitId != null) {
+                        allBarbers.filter { it.unitId == selectedUnitId }
+                    } else {
+                        allBarbers // Se nenhum unitId for fornecido, mostra todos
+                    }
+                    barberAdapter.updateDataSet(filteredBarbers)
+                } else {
+                    Log.e("API Error", "Falha ao carregar os barbeiros. Código: ${response.code()}")
+                    Toast.makeText(this@SelectBarberActivity, "Erro ao carregar os barbeiros.", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<Barbeiro>>, t: Throwable) {
+                Log.e("API Failure", "Erro ao carregar os barbeiros", t)
+                Toast.makeText(this@SelectBarberActivity, "Erro de conexão ao carregar os barbeiros.", Toast.LENGTH_LONG).show()
+            }
+        })
+    }
+
+    private fun configureOkHttpClient(): OkHttpClient {
+        val logging = HttpLoggingInterceptor { message -> Log.d("OkHttp", message) }
+        logging.level = HttpLoggingInterceptor.Level.BODY
+        return OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .build()
     }
 }
