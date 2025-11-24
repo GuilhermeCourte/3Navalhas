@@ -90,5 +90,10 @@
             android:name=".EditBarberActivity"
             android:exported="false" />
 
+        <!-- NOVO: Activity para Meus Agendamentos -->
+        <activity
+            android:name=".UserAppointmentsActivity"
+            android:exported="false" />
+
     </application>
 </manifest>

@@ -37,7 +37,7 @@ class SelectServiceActivity : AppCompatActivity() {
 
         // 1. Configurar Retrofit e ApiService
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.171.29.115/3navalhas_api/") // Usar o mesmo IP local do XAMPP
+            .baseUrl("http://192.168.15.53/3navalhas_api/") // Usar o mesmo IP local do XAMPP
             .addConverterFactory(GsonConverterFactory.create())
             .client(configureOkHttpClient())
             .build()

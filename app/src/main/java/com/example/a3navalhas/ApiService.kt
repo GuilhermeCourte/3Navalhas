@@ -1,6 +1,7 @@
 package com.example.a3navalhas
 
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -109,6 +110,16 @@ interface ApiService {
     @FormUrlEncoded
     @POST("delete_barber.php")
     fun deleteBarber(@Field("id") id: String): Call<GenericResponse>
+
+    // --- Endpoints para Agendamentos (Restaurado) ---
+    @GET("listar_agendamentos.php")
+    suspend fun getAgendamentos(): List<Agendamento>
+
+    @GET("listar_agendamentos_por_cliente.php")
+    suspend fun getAgendamentosPorCliente(@Query("telefone_cliente") telefoneCliente: String): List<Agendamento>
+
+    @POST("criar_agendamento.php")
+    suspend fun criarAgendamento(@Body request: AgendamentoRequest): ApiResponse
 
     // --- Data Classes de Resposta --- (assumindo que Servico, Unidade, Barbeiro e LoginResponse já estão definidas e acessíveis)
     data class GenericResponse(val status: String, val message: String)
