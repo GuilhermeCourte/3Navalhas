@@ -18,6 +18,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import android.app.AlertDialog
+import com.example.a3navalhas.Constants // Adicionando a importação para Constants
 
 class ManageServicesActivity : AppCompatActivity() {
 
@@ -43,7 +44,7 @@ class ManageServicesActivity : AppCompatActivity() {
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.15.53/3navalhas_api/")
+            .baseUrl(Constants.BASE_URL) // Usando a constante centralizada
             .addConverterFactory(GsonConverterFactory.create())
             .client(configureOkHttpClient())
             .build()
@@ -59,7 +60,7 @@ class ManageServicesActivity : AppCompatActivity() {
             onDeleteClick = { service, position ->
                 AlertDialog.Builder(this)
                     .setTitle("Confirmar Exclusão")
-                    .setMessage("Tem certeza que deseja excluir o serviço '${service.name}'?")
+                    .setMessage("Tem certeza que deseja excluir o serviço '\${service.name}'?")
                     .setPositiveButton("Sim") { dialog, which ->
                         deleteService(service.id, position)
                     }

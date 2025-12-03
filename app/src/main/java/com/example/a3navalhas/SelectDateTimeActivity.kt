@@ -2,12 +2,20 @@ package com.example.a3navalhas
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.CalendarView
-import android.widget.TimePicker
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.button.MaterialButton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -16,18 +24,23 @@ class SelectDateTimeActivity : AppCompatActivity() {
 
     private lateinit var bottomNavigationView: BottomNavigationView
     private lateinit var calendarView: CalendarView
-    private lateinit var timePicker: TimePicker
-    private lateinit var buttonConfirmDateTime: MaterialButton
+    private lateinit var recyclerViewTimeSlots: RecyclerView
+    private lateinit var progressBar: ProgressBar
+    private lateinit var timeSlotAdapter: TimeSlotAdapter
+    private var selectedDate: String = "" // Formato: yyyy-MM-dd
 
-    private var selectedYear: Int = 0
-    private var selectedMonth: Int = 0
-    private var selectedDayOfMonth: Int = 0
-    private var selectedHour: Int = 0
-    private var selectedMinute: Int = 0
+    private val api: ApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ApiService::class.java)
+    }
 
     companion object {
-        const val REQUEST_CODE_SELECT_DATETIME = 4
         const val EXTRA_SELECTED_DATE_TIME = "EXTRA_SELECTED_DATE_TIME"
+        const val MIN_HOUR = 9
+        const val MAX_HOUR = 18
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,77 +48,93 @@ class SelectDateTimeActivity : AppCompatActivity() {
         setContentView(R.layout.activity_select_date_time)
 
         calendarView = findViewById(R.id.calendarView)
-        timePicker = findViewById(R.id.timePicker)
-        buttonConfirmDateTime = findViewById(R.id.buttonConfirmDateTime)
+        recyclerViewTimeSlots = findViewById(R.id.recyclerViewTimeSlots)
+        progressBar = findViewById(R.id.progressBarTimeSlots)
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
-        // Inicializar com a data e hora atuais
-        val calendar = Calendar.getInstance()
-        selectedYear = calendar.get(Calendar.YEAR)
-        selectedMonth = calendar.get(Calendar.MONTH)
-        selectedDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
-        selectedHour = calendar.get(Calendar.HOUR_OF_DAY)
-        selectedMinute = calendar.get(Calendar.MINUTE)
-
-        // Configurar TimePicker para 24h
-        timePicker.setIs24HourView(true)
-
-        // Listener para CalendarView
-        calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
-            selectedYear = year
-            selectedMonth = month
-            selectedDayOfMonth = dayOfMonth
-        }
-
-        // Listener para TimePicker
-        timePicker.setOnTimeChangedListener { view, hourOfDay, minute ->
-            selectedHour = hourOfDay
-            selectedMinute = minute
-        }
-
-        // Listener para o botão de confirmação
-        buttonConfirmDateTime.setOnClickListener {
-            val selectedCalendar = Calendar.getInstance().apply {
-                set(selectedYear, selectedMonth, selectedDayOfMonth, selectedHour, selectedMinute)
-            }
-            val formattedDateTime = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(selectedCalendar.time)
+        timeSlotAdapter = TimeSlotAdapter(emptyList()) { selectedTime ->
+            // Quando um horário é clicado, finaliza a Activity
+            val fullDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(selectedDate)
+            val dayMonthYear = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(fullDate!!)
+            val finalDateTime = "$dayMonthYear $selectedTime"
 
             val resultIntent = Intent().apply {
-                putExtra(EXTRA_SELECTED_DATE_TIME, formattedDateTime)
+                putExtra(EXTRA_SELECTED_DATE_TIME, finalDateTime)
             }
             setResult(RESULT_OK, resultIntent)
             finish()
         }
+        recyclerViewTimeSlots.adapter = timeSlotAdapter
 
-        // Configurar Bottom Navigation View
+        // Inicializar com a data de hoje
+        val today = Calendar.getInstance()
+        selectedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(today.time)
+        fetchAvailableTimeSlots(selectedDate)
+
+        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
+            val calendar = Calendar.getInstance().apply {
+                set(year, month, dayOfMonth)
+            }
+            selectedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(calendar.time)
+            fetchAvailableTimeSlots(selectedDate)
+        }
+
         bottomNavigationView.selectedItemId = R.id.navigation_schedule
-
         bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.navigation_home -> {
-                    val intent = Intent(this, WelcomeActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                    finish()
+                    startActivity(Intent(this, WelcomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
                     true
                 }
                 R.id.navigation_services -> {
-                    val intent = Intent(this, MainActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                    finish()
+                    startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
                     true
                 }
                 R.id.navigation_schedule -> {
-                    Toast.makeText(this, "Você já está na tela de Seleção de Data/Hora", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Você já está aqui", Toast.LENGTH_SHORT).show()
                     true
                 }
                 R.id.navigation_user -> {
-                    val intent = Intent(this, LoginActivity::class.java)
-                    startActivity(intent)
+                    startActivity(Intent(this, LoginActivity::class.java))
                     true
                 }
                 else -> false
+            }
+        }
+    }
+
+    private fun generateAllTimeSlots(): List<String> {
+        val slots = mutableListOf<String>()
+        for (hour in MIN_HOUR..MAX_HOUR) {
+            slots.add(String.format("%02d:00", hour))
+            if (hour < MAX_HOUR) { // Adiciona "xx:30" até 17:30
+                slots.add(String.format("%02d:30", hour))
+            }
+        }
+        return slots
+    }
+
+    private fun fetchAvailableTimeSlots(date: String) {
+        progressBar.visibility = View.VISIBLE
+        recyclerViewTimeSlots.visibility = View.GONE
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val bookedSlots = api.getBookedTimeSlots(date)
+                val allSlots = generateAllTimeSlots()
+                val availableSlots = allSlots.filter { it !in bookedSlots }
+
+                withContext(Dispatchers.Main) {
+                    progressBar.visibility = View.GONE
+                    recyclerViewTimeSlots.visibility = View.VISIBLE
+                    timeSlotAdapter.updateDataSet(availableSlots)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    progressBar.visibility = View.GONE
+                    Log.e("SelectDateTime", "Erro ao carregar horários: ", e)
+                    Toast.makeText(this@SelectDateTimeActivity, "Erro ao carregar horários.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

@@ -14,6 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import com.example.a3navalhas.Constants // Adicionando a importação para Constants
 
 class AddServiceActivity : AppCompatActivity() {
     private lateinit var nameEditText: EditText
@@ -36,7 +37,7 @@ class AddServiceActivity : AppCompatActivity() {
         saveButton = findViewById(R.id.saveServiceButton)
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.15.53/3navalhas_api/")
+            .baseUrl(Constants.BASE_URL) // Usando a constante centralizada
             .addConverterFactory(GsonConverterFactory.create())
             .client(configureOkHttpClient())
             .build()

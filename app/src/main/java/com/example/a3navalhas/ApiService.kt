@@ -118,8 +118,15 @@ interface ApiService {
     @GET("listar_agendamentos_por_cliente.php")
     suspend fun getAgendamentosPorCliente(@Query("telefone_cliente") telefoneCliente: String): List<Agendamento>
 
+    @GET("listar_horarios_ocupados.php")
+    suspend fun getBookedTimeSlots(@Query("data") data: String): List<String>
+
     @POST("criar_agendamento.php")
     suspend fun criarAgendamento(@Body request: AgendamentoRequest): ApiResponse
+
+    @FormUrlEncoded
+    @POST("delete_agendamento.php")
+    fun deleteAgendamento(@Field("id") id: String): Call<GenericResponse>
 
     // --- Data Classes de Resposta --- (assumindo que Servico, Unidade, Barbeiro e LoginResponse já estão definidas e acessíveis)
     data class GenericResponse(val status: String, val message: String)

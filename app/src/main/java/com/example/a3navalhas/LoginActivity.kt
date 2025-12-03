@@ -6,7 +6,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.textfield.TextInputEditText // Importar TextInputEditText
+import com.google.android.material.textfield.TextInputEditText 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Call
@@ -15,17 +15,18 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import com.example.a3navalhas.Constants // Adicionando a importação para Constants
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var emailPhoneEditText: TextInputEditText // Mudado para emailPhoneEditText
-    private lateinit var passwordEditText: TextInputEditText // Mudado para TextInputEditText
+    private lateinit var emailPhoneEditText: TextInputEditText 
+    private lateinit var passwordEditText: TextInputEditText 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        emailPhoneEditText = findViewById(R.id.emailPhoneEditText) // Usar o novo ID
+        emailPhoneEditText = findViewById(R.id.emailPhoneEditText) 
         passwordEditText = findViewById(R.id.passwordEditText)
         val loginButton: Button = findViewById(R.id.loginButton)
 
@@ -49,7 +50,7 @@ class LoginActivity : AppCompatActivity() {
             .build()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.15.53/3navalhas_api/")
+            .baseUrl(Constants.BASE_URL) // Usando a constante centralizada
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()
@@ -61,7 +62,7 @@ class LoginActivity : AppCompatActivity() {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.isSuccessful && response.body()?.status == "success") {
                     Toast.makeText(this@LoginActivity, "Login bem-sucedido!", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this@LoginActivity, AdminActivity::class.java) // Redirecionar para AdminActivity
+                    val intent = Intent(this@LoginActivity, AdminActivity::class.java) 
                     startActivity(intent)
                     finish()
                 } else {

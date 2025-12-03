@@ -14,6 +14,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import com.example.a3navalhas.Constants // Adicionando a importação para Constants
 
 class AddUnitActivity : AppCompatActivity() {
 
@@ -37,7 +38,7 @@ class AddUnitActivity : AppCompatActivity() {
 
         // Configura Retrofit e ApiService
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.15.53/3navalhas_api/")
+            .baseUrl(Constants.BASE_URL) // Usando a constante centralizada
             .addConverterFactory(GsonConverterFactory.create())
             .client(configureOkHttpClient())
             .build()

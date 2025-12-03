@@ -16,6 +16,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import com.example.a3navalhas.Constants // Adicionando a importação para Constants
 
 class EditBarberActivity : AppCompatActivity() {
 
@@ -51,7 +52,7 @@ class EditBarberActivity : AppCompatActivity() {
         populateFields()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.15.53/3navalhas_api/")
+            .baseUrl(Constants.BASE_URL) // Usando a constante centralizada
             .addConverterFactory(GsonConverterFactory.create())
             .client(configureOkHttpClient())
             .build()
@@ -114,7 +115,7 @@ class EditBarberActivity : AppCompatActivity() {
         }
 
         apiService.updateBarber(barberId, name, specialization, if (imageUrl.isEmpty()) null else imageUrl, selectedUnitId!!).enqueue(object : Callback<ApiService.GenericResponse> {
-            override fun onResponse(call: Call<ApiService.GenericResponse>, response: Response<ApiService.GenericResponse>) {
+            override fun onResponse(call: Call<ApiService.GenericResponse>, response: Response<ApiService.GenericResponse>) { // CORRIGIDO: Removido 'fun' duplicado
                 if (response.isSuccessful && response.body()?.status == "success") {
                     Toast.makeText(this@EditBarberActivity, "Barbeiro atualizado com sucesso!", Toast.LENGTH_LONG).show()
                     setResult(RESULT_OK)

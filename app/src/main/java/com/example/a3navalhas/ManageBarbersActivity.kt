@@ -17,6 +17,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import android.app.AlertDialog
+import com.example.a3navalhas.Constants // Adicionando a importação para Constants
 
 class ManageBarbersActivity : AppCompatActivity() {
 
@@ -40,7 +41,7 @@ class ManageBarbersActivity : AppCompatActivity() {
         bottomNavigationView = findViewById(R.id.bottomNavigationView)
 
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://192.168.15.53/3navalhas_api/")
+            .baseUrl(Constants.BASE_URL) // Usando a constante centralizada
             .addConverterFactory(GsonConverterFactory.create())
             .client(configureOkHttpClient())
             .build()
@@ -56,7 +57,7 @@ class ManageBarbersActivity : AppCompatActivity() {
             onDeleteClick = { barber, position ->
                 AlertDialog.Builder(this)
                     .setTitle("Confirmar Exclusão")
-                    .setMessage("Tem certeza que deseja excluir o barbeiro '${barber.name}'?")
+                    .setMessage("Tem certeza que deseja excluir o barbeiro '\${barber.name}'?")
                     .setPositiveButton("Sim") { _, _ ->
                         deleteBarber(barber.id, position)
                     }

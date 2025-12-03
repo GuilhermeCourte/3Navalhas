@@ -32,7 +32,19 @@
             android:textColor="#757575"
             android:text="Data e Hora: [Data] - [Hora]" />
 
-        <!-- Você pode adicionar mais detalhes aqui, como serviço e barbeiro, se a API retornar -->
+        <!-- Botão para Excluir Agendamento -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonDeleteAppointment"
+            style="@style/Widget.MaterialComponents.Button.TextButton.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="end"
+            android:text="Excluir"
+            android:textColor="#B71C1C"
+            app:icon="@drawable/ic_delete"
+            app:iconTint="#B71C1C"
+            android:visibility="gone" /> <!-- Adicionado para ocultar por padrão -->
 
     </LinearLayout>
 

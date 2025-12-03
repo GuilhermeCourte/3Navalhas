@@ -54,7 +54,7 @@ class AgendamentoActivity : AppCompatActivity() {
             .build()
 
         Retrofit.Builder()
-            .baseUrl("http://192.168.15.53/3navalhas_api/") // Verifique e ajuste o IP
+            .baseUrl(Constants.BASE_URL) // Usando a constante centralizada
             .addConverterFactory(GsonConverterFactory.create())
             .client(httpClient) // Adicionar o cliente HTTP com o interceptor
             .build()
